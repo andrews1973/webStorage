@@ -9,33 +9,6 @@ function mensaje(texto) {
     mensajes.innerHTML += texto + "<br>";
 }
 
-const agregarProducto = (nombreProducto) => {
-    // hemos recogido y recibido el nombre del producto del formulario con esta dato hay que crear un objeto producto con id nombre y cantidad
-    // primero pedir los productos que ya hay en el local y guardarlos el el array productos
-    // productos = pedirProductos(); // pero no hace falta, ya recupero los productos al iniciar la aplicación, lineas finales del todo
-    // comprobar si ya existe con find(), o includes... aumento cantidad en 1 y si no lo añado al array
-    const productoEncontrado = buscarProducto(nombreProducto); // no es necesario pasarle productos el array donde ha de buscar el producto.
-
-    if (productoEncontrado) {
-        //Si find lo encuentra nos devuelve el producto, pues modificamos su propiedad cantidad sumandole uno
-        productoEncontrado.cantidad++; // =+1
-        mensaje(`Has añadido una unidad más del producto: <strong>${productoEncontrado.nombre}</strong> ahora dispones de <strong>${productoEncontrado.cantidad}</strong> unidades`);
-    } else {
-        // creamos un nuevo objeto producto a partir de su nombre con id igual al nombre y cantidad 1
-        const nuevoProducto = {
-            id: nombreProducto,
-            nombre: nombreProducto,
-            cantidad: 1,
-        };
-        //productos.push(nuevoProducto) // es un array añadiriamos el objeto
-        productos = [...productos, nuevoProducto]; // Utilizando spread (...)
-        mensaje(`Has añadido el producto: <strong>${nombreProducto}</strong>`);
-    }
-
-    guardarProductosLocal(productos); // guardamos todos los productos en el local
-    pintarProductos(productos); // pintamos en la tabla
-};
-
 const buscarProducto = (nombreProducto) => {
     return productos.find((elemento) => elemento.id === nombreProducto);
 };
@@ -45,10 +18,9 @@ const guardarProductosLocal = (productos) => {
     localStorage.setItem("productos", JSON.stringify(productos));
 };
 
-const pedirProductos = () => {
+const obtenerProductosLocal = () => {
     // pide los productos al local
-    const productosGuardados =
-        JSON.parse(localStorage.getItem("productos")) || [];
+    const productosGuardados = JSON.parse(localStorage.getItem("productos")) || [];
     return productosGuardados;
 };
 
@@ -57,12 +29,12 @@ const pintarProductos = (productos) => {
 
     const fragmento = document.createDocumentFragment(); // mejor dentro de la funcion pintar
 
-    if (productos.length === 0) {
+    if (productos.length === 0) { // si no hay productos
+
         mensaje(`<strong>No existen productos que mostrar,</strong> agrega alguno`);
-    } else {
-        /*
-Ojo al desestructurar objetos... Extraemos sus propiedades en variables locales, pero no creamos una copia del objeto. Si cantidad es un número como en los contadores, modificar la variable no modifica la propiedad original del objeto. Si necesitaramos modificar los valores originales al pintar o en otras funciones si necesitaramos modificar una propiedad del objeto original, la desestructuración puede que no sea la opción más adecuada.
-*/
+    
+    } else { // si en el array de productos hay productos los recorremos y pintamos
+
         productos.forEach(({ id, nombre, cantidad }) => {
             // Crear una fila (tr)
             const fila = document.createElement("tr");
@@ -106,33 +78,61 @@ Ojo al desestructurar objetos... Extraemos sus propiedades en variables locales,
     }
 };
 
+const agregarProducto = (nombreProducto) => {
+    // buscamos si el producto existe llamando a la funcion y pasandole el nombre o el id
+    const productoEncontrado = buscarProducto(nombreProducto); 
+    //Si find lo encuentra nos devuelve el producto, le sumamos 1 a la cantido y si no lo creamos
+    if (productoEncontrado) {
+        productoEncontrado.cantidad++; // =+1
+        mensaje(`Has añadido una unidad más del producto: <strong>${productoEncontrado.nombre}</strong> ahora dispones de <strong>${productoEncontrado.cantidad}</strong> unidades`);
+    } else {
+        // creamos un nuevo objeto producto con id, nombre y cantidad = 1
+        const nuevoProducto = {
+            id: nombreProducto,
+            nombre: nombreProducto,
+            cantidad: 1,
+        };
+        //productos.push(nuevoProducto) // con push añadiriamos el objeto al array.
+        productos = [...productos, nuevoProducto]; // Utilizando spread (...) tambien
+        mensaje(`Has añadido el producto: <strong>${nombreProducto}</strong>`);
+    }
+    // una vez agregado el producto a nuestro array...
+    guardarProductosLocal(productos); // guardamos todos los productos en el local pasandole productos a la funcion
+    pintarProductos(productos); // pintamos en la tabla de todos los productos del array productos
+};
+
 const eliminarProducto = (productoId) => {
-    // no puedo eliminar sin antes haber agregado un producto, por tanto en array productos debe haber al menos un producto o no me sale el boton eliminar
-    // si la cantidad mayor que 1 reduzco la cantidad y si es 1 elimino el producto del array
-    const productoEncontrado = buscarProducto(productoId); // devuelve el objeto y compruebo existe
+    // en este momento el array productos al menos habra un producto. Si no no saldria el boton eliminar
+    // busco el producto con ese productoId,  para comprobar su cantidad
+    const productoEncontrado = buscarProducto(productoId); 
 
      if (!productoEncontrado) {
         return;
     }
     if (productoEncontrado.cantidad > 1) {
-        //Si find lo encuentra nos devuelve el producto, pues modificamos su propiedad cantidad restandole 1
+        //Si la cantidad del producto buscado con find() > 1, modificamos su propiedad cantidad restandole 1
         productoEncontrado.cantidad--; // =-1
         mensaje(`Has eliminado una unidad de: <strong>${productoEncontrado.nombre}</strong> te quedan <strong>${productoEncontrado.cantidad}</strong>`);
     } else {
-        // eliminamos del array el objeto producto, modificar el array y volver a guardar el array actualizado
+        // eliminamos del array de productos el producto encontrado si la cantidad es 1
         mensaje(`No hay mas unidades del producto <strong>${productoEncontrado.nombre}</strong> lo has eliminado `);
+        // filter nos devolvera en este caso el array de productos sin el producto eliminado
         productos = productos.filter((producto) => producto.id !== productoId);
     }
-    guardarProductosLocal(productos);
-    pintarProductos(productos);
+    guardarProductosLocal(productos); // guardamos en el local los productos actuales
+    pintarProductos(productos); // pintamos en la tabla los productos actuales del array productos
 };
 
+// eventos
+
+// clic en eliminar
 document.addEventListener("click", (ev) => {
     if (ev.target.matches("#tabla button")) {
         eliminarProducto(ev.target.dataset.id);
     }
 });
 
+// mandar formulario (contiene boton agregar producto)
 formulario.addEventListener("submit", (ev) => {
     ev.preventDefault();
 
@@ -149,18 +149,18 @@ formulario.addEventListener("submit", (ev) => {
         validado = false;
     }
 
-    // Mostramos el resultado
+    // si no valida mostramos menajes y si valida agregamos el producto a nuestro array productos
     if (!validado) {
         mensaje("Por favor, <strong>corrige todos los errores del formulario</strong>");
         mensajes.classList.add("rojo");
     } else {
-        // si valida... mandamos el nombre del producto a la funcion agregrar
 
         mensajes.classList.add("verde");
 
-        agregarProducto(nombreProducto);
+        agregarProducto(nombreProducto);  
     }
 });
 
-productos = pedirProductos();
+// inicializamos Recuperar del local y pintar productos
+productos = obtenerProductosLocal();
 pintarProductos(productos);

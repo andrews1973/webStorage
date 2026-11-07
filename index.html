@@ -9,7 +9,41 @@
 </head>
 
 <body>
-    
+    <header>
+        <h1>Listado productos</h1>
+    </header>
+
+    <main>
+        <section id="form">
+            <form id="formulario1" novalidate>
+                <div>
+                    <label for="nombre">Nombre del Producto</label>
+                    <input id="nombre" type="text" name="nombre" placeholder="Nombre del producto"
+                        autofocus>
+                </div>
+                <input type="submit" value="Agregar Producto">
+                <input type="reset" value="Reset">
+            </form>
+            <div id="mensajes"></div>
+        </section>
+        <section id="tabla">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Eliminar</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpoTabla">
+
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+
 
 
 

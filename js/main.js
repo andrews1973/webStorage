@@ -5,7 +5,7 @@ const cuerpoTabla = document.querySelector("#cuerpoTabla");
 // Lista de productos
 let productos = [];
 
-function mensaje(texto) {
+const mensaje = (texto) => {
     mensajes.innerHTML += texto + "<br>";
 }
 

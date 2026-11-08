@@ -10,7 +10,7 @@ function mensaje(texto) {
 }
 
 const buscarProducto = (nombreProducto) => {
-    return productos.find((elemento) => elemento.id === nombreProducto);
+    return productos.find(({nombre}) => nombre === nombreProducto);
 };
 
 const guardarProductosLocal = (productos) => {
@@ -89,7 +89,7 @@ const agregarProducto = (nombreProducto) => {
     } else {
         // creamos un nuevo objeto producto con id, nombre y cantidad = 1
         const nuevoProducto = {
-            id: nombreProducto,
+            id: nombreProducto, // de momento coincide con el nombre
             nombre: nombreProducto,
             cantidad: 1,
         };
@@ -103,8 +103,7 @@ const agregarProducto = (nombreProducto) => {
 };
 
 const eliminarProducto = (productoId) => {
-    // en este momento el array productos al menos habra un producto. Si no no saldria el boton eliminar
-    // busco el producto con ese productoId,  para comprobar su cantidad
+    // busco el producto con ese productoId,  para comprobar su cantidad 
     const productoEncontrado = buscarProducto(productoId); 
 
      if (!productoEncontrado) {
@@ -118,7 +117,7 @@ const eliminarProducto = (productoId) => {
         // eliminamos del array de productos el producto encontrado si la cantidad es 1
         mensaje(`No hay mas unidades del producto <strong>${productoEncontrado.nombre}</strong> lo has eliminado `);
         // filter nos devolvera en este caso el array de productos sin el producto eliminado
-        productos = productos.filter((producto) => producto.id !== productoId);
+        productos = productos.filter(({id}) => id !== productoId);
     }
     guardarProductosLocal(productos); // guardamos en el local los productos actuales
     pintarProductos(productos); // pintamos en la tabla los productos actuales del array productos

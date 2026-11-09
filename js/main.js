@@ -68,7 +68,7 @@ const pintarProductos = (productos) => {
 
             const botonEliminar = document.createElement("button");
             botonEliminar.type = "button";
-            botonEliminar.dataset.id = id;
+            botonEliminar.dataset.iden = id;
             botonEliminar.classList.add("del");
             botonEliminar.textContent = "Eliminar";
 
@@ -141,10 +141,10 @@ const eliminarProducto = (productoId) => {
 // EVENTOS
 
 // clic en eliminar, llamamos a la funcion eliminarProducto 
-// pasandole el dataset.id que coincide con el id del producto
+// pasandole el dataset.iden que coincide con el id del producto
 document.addEventListener("click", (ev) => {
     if (ev.target.matches("#tabla button.del")) {
-        eliminarProducto(ev.target.dataset.id);
+        eliminarProducto(ev.target.dataset.iden);
     }
 });
 

@@ -11,7 +11,7 @@ const mensaje = (texto) => {
 
 // busca directamente por el nombre, pero devuelve el producto completo que coincide
 const buscarProducto = (nombreProducto) => {
-    return productos.find(({ nombre }) => nombre === nombreProducto);
+    return productos.find(({ nombre }) => nombre.toLowerCase() === nombreProducto.toLowerCase());
 };
 
 // guardar en el local el array de procdutos en formato texto
